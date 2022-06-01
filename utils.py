@@ -18,7 +18,8 @@ from sklearn.model_selection import train_test_split
 # This dataset is in .mat format.
 # 
 # Convert the data into dataframe
-def Convert_data_to_CSV(annolist, act, data_arr, img_tra) :
+def Convert_data_to_CSV(annolist, act, data_arr, img_tra, data) :
+    
     for ix in range(0,annolist.shape[1]):
         if img_tra[0,ix] == 0:
             continue
@@ -212,7 +213,7 @@ class LogReg:
 
 # %%
 
-def Euclidian_LR (dataset, labels):
+def Euclidian_LR (dataset, labels, ncomponents):
     X_train, X_test, y_train, y_test = train_test_split(dataset,labels,train_size=0.8)
     nsamples, nx, ny = X_train.shape
     X_train = X_train.reshape((nsamples,nx*ny))
@@ -220,7 +221,7 @@ def Euclidian_LR (dataset, labels):
     X_test = X_test.reshape((nsamples,nx*ny))
 
     # PCA + LR on euclidian space
-    pca = run_PCA(X_train, X_test, n_components=10)
+    pca = run_PCA(X_train, X_test, n_components=ncomponents)
     X_train_pca, X_test_pca, pca = pca.run()
 
     lr = LogReg(X_train=X_train_pca, X_test=X_test_pca, y_train=y_train, y_test=y_test)
@@ -230,7 +231,7 @@ def Euclidian_LR (dataset, labels):
 
 # %%
 # PCA on manifolds
-def Geometric_LR(dataset,labels ):
+def Geometric_LR(dataset,labels , n_components =32):
     m_ambient = 2
     k_landmarks = 16
 
@@ -238,6 +239,8 @@ def Geometric_LR(dataset,labels ):
     matrices_metric = preshape.embedding_metric
 
     pose_preshape = preshape.projection(dataset)
+    sizes = matrices_metric.norm(preshape.center(dataset))
+
     base_point = pose_preshape[0]
     # print(pose_preshape.shape)
     # print(preshape.belongs(pose_preshape))
@@ -254,6 +257,7 @@ def Geometric_LR(dataset,labels ):
     #%matplotlib inline
     X = tpca.transform(pose_shape)
 
+    X = X[:, 0:n_components]
     #Log Reg on tangent space
     X_train_manifold, X_test_manifold, y_train_manifold, y_test_manifold = train_test_split(X,labels,train_size=0.8)
 
@@ -261,7 +265,7 @@ def Geometric_LR(dataset,labels ):
     manifold_lr.train_model()
     train_acc, test_acc = manifold_lr.test_model()
 
-    return tpca, X , train_acc, test_acc 
+    return tpca, X , train_acc, test_acc , sizes
 
 
 # %%
