@@ -227,7 +227,7 @@ def Euclidian_LR (dataset, labels, ncomponents):
     lr = LogReg(X_train=X_train_pca, X_test=X_test_pca, y_train=y_train, y_test=y_test)
     lr.train_model()
     train_acc, test_acc = lr.test_model()
-    return train_acc, test_acc , pca
+    return X_train_pca,y_train, train_acc, test_acc , pca
 
 # %%
 # PCA on manifolds
