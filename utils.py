@@ -97,11 +97,13 @@ def Clean_data(filter_data, data_arr):
     input_running = filter_data[filter_data["Activity"] == "running"]
     input_cycling= filter_data[filter_data["Activity"] == "bicycling, mountain"]
 
+    input_standing = filter_data[filter_data["Activity"] == "standing, miscellaneous"]
+    input_eating= filter_data[filter_data["Activity"] == "eating, sitting"] 
     input_cycling_filtered =  input_cycling[input_cycling[data_arr] != -1]
     
     input_running_filtered =  input_running[input_running[data_arr] != -1]
 
-    return input_running_filtered, input_cycling_filtered
+    return input_running_filtered, input_cycling_filtered,  input_standing , input_eating
 
 # %%
 # Extract keypoints and display the image
